@@ -8,6 +8,7 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private GameObject _player;
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
     private Rigidbody2D _rb;
 
     [Header("Player Variables")]
@@ -21,6 +22,7 @@ public class Player_Movement : MonoBehaviour
     private bool buffering = false;
     private float bufferJumpCountdown;
     private float coyoteTimeCounter;
+    private bool facingRight = true;
 
     // Start is called before the first frame update
     void Start()
@@ -44,14 +46,22 @@ public class Player_Movement : MonoBehaviour
         if (Grounded())
         {
             coyoteTimeCounter = _coyoteTime;
+            falling = false;
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
 
+        if(_rb.velocity.y < 0)
+        {
+            falling = true;
+        }
+
         MaxFallSpeed();
         BufferJump();
+
+        Falling();
     }
 
     private void FixedUpdate()
@@ -60,6 +70,15 @@ public class Player_Movement : MonoBehaviour
         _rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * _movementSpeed
                                     , _rb.velocity.y
                                     );
+
+        //! FLIP THE SPRITE TO THE DIRECTION YOU MOVE
+        if(
+            (_rb.velocity.x > 0 && facingRight == false) || 
+            (_rb.velocity.x < 0 && facingRight == true)
+            )
+        {
+            FlipSprite();
+        }
     }
 
     private void Jump()
@@ -83,8 +102,20 @@ public class Player_Movement : MonoBehaviour
             _rb.velocity = _rb.velocity/2;
         }
 
-        falling = true;
         coyoteTimeCounter = 0f;
+    }
+
+    //! INCREASE GRAVITY IF YOU ARE FALLING
+    private void Falling()
+    {
+        if (falling)
+        {
+            _rb.gravityScale = 4;
+        }
+        else
+        {
+            _rb.gravityScale = 2;
+        }
     }
 
     //! CHECK IF THE PLAYER IS IN THE GROUND
@@ -129,4 +160,9 @@ public class Player_Movement : MonoBehaviour
         }
     }
 
+    private void FlipSprite()
+    {
+        _spriteRenderer.flipX = !_spriteRenderer.flipX;
+        facingRight = !facingRight;
+    }
 }
