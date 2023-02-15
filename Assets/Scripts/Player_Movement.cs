@@ -9,7 +9,9 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Animator _anim;
     private Rigidbody2D _rb;
+    
 
     [Header("Player Variables")]
     [SerializeField] private float _movementSpeed = 10f;
@@ -23,6 +25,7 @@ public class Player_Movement : MonoBehaviour
     private float bufferJumpCountdown;
     private float coyoteTimeCounter;
     private bool facingRight = true;
+    private string currentState;
 
     // Start is called before the first frame update
     void Start()
@@ -40,6 +43,7 @@ public class Player_Movement : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space))
         {
             Fall();
+            falling = true;
         }
 
         //! COYOTE TIME (CAN JUMP JUST AFTER LEAVING A PLATFORM)
@@ -62,6 +66,7 @@ public class Player_Movement : MonoBehaviour
         BufferJump();
 
         Falling();
+        Checks();
     }
 
     private void FixedUpdate()
@@ -121,7 +126,13 @@ public class Player_Movement : MonoBehaviour
     //! CHECK IF THE PLAYER IS IN THE GROUND
     private bool Grounded()
     {
-        return Physics2D.OverlapCircle(_groundCheck.position, 0.05f, _groundLayer);
+        if (Physics2D.OverlapCircle(_groundCheck.position, 0.1f, _groundLayer)
+            || Physics2D.OverlapCircle(_groundCheck.position + new Vector3(0.12f, 0, 0), 0.1f, _groundLayer)
+            || Physics2D.OverlapCircle(_groundCheck.position + new Vector3(-0.12f, 0, 0), 0.1f, _groundLayer))
+        {
+            return true;
+        }
+        else { return false; }
     }
 
     //! IF YOU ARE FALLING TOO FAST YOU SLOW DOWN
@@ -164,5 +175,43 @@ public class Player_Movement : MonoBehaviour
     {
         _spriteRenderer.flipX = !_spriteRenderer.flipX;
         facingRight = !facingRight;
+    }
+
+    //! CHECKS STATE TO PLAY AN ANIMATION
+    private void Checks()
+    {
+        if (!Grounded() && falling == false)
+        {
+            //Play Jumping animation
+            ChangeAnimationState("penguin_jumping");
+        }
+        if (!Grounded() && falling == true)
+        {
+            //Play Falling animation
+            ChangeAnimationState("penguin_falling");
+        }
+        if (Grounded())
+        {
+            if (falling == false && _rb.velocity.x == 0)
+            {
+                //Play Iddle animation
+                ChangeAnimationState("penguin_idle");
+            }
+            if (falling == false && _rb.velocity.x != 0)
+            {
+                //Play Walking animation
+                ChangeAnimationState("penguin_walking");
+            }
+        }
+    }
+
+    void ChangeAnimationState(string newState)
+    {
+        //! Stop the same animation to play again
+        if (currentState == newState) return;
+
+        //! Play the new animation
+        _anim.Play(newState);
+        currentState = newState;
     }
 }

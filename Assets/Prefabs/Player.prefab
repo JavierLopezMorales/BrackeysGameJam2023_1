@@ -112,6 +112,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _spriteRenderer: {fileID: 2374166824493824906}
+  _anim: {fileID: 5265648987611632416}
   _movementSpeed: 10
   _jumpForce: 15
   _fallForce: 20
