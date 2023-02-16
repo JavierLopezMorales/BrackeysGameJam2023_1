@@ -9,6 +9,7 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private ParticleSystem _playerJumpParticles;
     [SerializeField] private Animator _anim;
     private Rigidbody2D _rb;
     
@@ -49,6 +50,11 @@ public class Player_Movement : MonoBehaviour
         //! COYOTE TIME (CAN JUMP JUST AFTER LEAVING A PLATFORM)
         if (Grounded())
         {
+            if (falling)
+            {
+                Debug.Log(falling);
+                _playerJumpParticles.Play();
+            }
             coyoteTimeCounter = _coyoteTime;
             falling = false;
         }
@@ -91,7 +97,9 @@ public class Player_Movement : MonoBehaviour
         if (coyoteTimeCounter > 0)
         {
             _rb.velocity = new Vector2(0, _jumpForce);
+            
             falling = false;
+            
             buffering = false;
         }
         else

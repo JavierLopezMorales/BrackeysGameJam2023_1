@@ -25,7 +25,7 @@ public class Player_Restart : MonoBehaviour
             _player.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
             _playerRenderer.SetActive(false);
             _playerDeathParticles.Play();
-            /*TODO PARTICLE EFFECTS
+            /*TODO
              *      DEATH SOUND
              */
         }
