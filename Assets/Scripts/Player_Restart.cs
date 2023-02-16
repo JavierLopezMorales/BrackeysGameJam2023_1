@@ -7,6 +7,8 @@ public class Player_Restart : MonoBehaviour
 
     [SerializeField] private Transform _initialPosition;
     [SerializeField] private GameObject _player;
+    [SerializeField] private GameObject _playerRenderer;
+    [SerializeField] private ParticleSystem _playerDeathParticles;
 
     // Start is called before the first frame update
     void Start()
@@ -21,7 +23,8 @@ public class Player_Restart : MonoBehaviour
         {
             StartCoroutine("TimeDelay");
             _player.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-           
+            _playerRenderer.SetActive(false);
+            _playerDeathParticles.Play();
             /*TODO PARTICLE EFFECTS
              *      DEATH SOUND
              */
@@ -34,6 +37,6 @@ public class Player_Restart : MonoBehaviour
         
         _player.transform.position = _initialPosition.position;
         _player.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-
+        _playerRenderer.SetActive(true);
     }
 }
